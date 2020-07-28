@@ -1,0 +1,129 @@
+* {
+    margin: 0;
+    padding: 0;
+    /* box-sizing: border-box; */
+    font-weight: normal;
+}
+
+html,body{
+    /* background-image: url('vendors/img/back03.jpg'); */
+    background-color: rgb(47, 105, 105);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: rgb(5, 5, 5);
+    font-family: 'Rowdies', cursive;
+    font-size: 18px;
+    font-weight: 300;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+}
+
+.flex_outer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container{
+    align-self: center;
+    width: 700px;
+    height: 500px;
+    box-shadow:1px 7px 5px 5px rgba(68, 68, 68, 0.6);
+    background: linear-gradient(0deg,#93b5c0,#14dbe2);
+    display: inline-block;
+    margin-top: 5%;
+}
+
+/* =========================================search nav bar============================================== */
+#logo{
+    width: 45px;
+    height: 45px;
+}
+
+/*============================================= First row ===================================================*/
+.row_one{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 15%;
+}
+.city{
+    display: flex;
+    align-self: center;
+    justify-content: end;
+    font-size: 200%;
+}
+/*============================================ Second row ===================================================*/
+.row_two{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 5%;
+}
+.name{
+    display: flex;
+    justify-content: center;
+}
+
+
+/*============================================ third row ===================================================*/
+.row_three{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.state_icon_svg{
+    display: flex;
+    justify-content: center;
+    height: 80px;
+    width: 80px;
+}
+
+
+
+/*======================================== fourth row =======================================================*/
+.row_four{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 25%;
+}
+
+.temperature{
+    display: flex;
+    font-size: 500%;
+    justify-content: center;
+   
+}  
+/*========================================= Fifth row ==================================================*/
+.row_five{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 10%;
+    align-content: center;
+}
+
+.weather_state{
+    display: flex;
+    justify-content: center;
+}
+
+
+
+/*========================================= Five days forecast=================================================*/
+.five_days{
+    display: flex;
+    flex-direction: row;
+    border-top: 1px black solid;
+    justify-content: space-evenly;
+    height: 10%;
+}
+
+.first{
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+}
+
