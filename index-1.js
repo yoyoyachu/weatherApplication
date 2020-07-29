@@ -23,10 +23,10 @@ const weatherBlock = (weather_periods) => {
     weather_periods.forEach(element => {
         const markup = `
             
-            <div class="container" id="container_size">
+            <div class="container" id="container_size${element.number}">
                 <div class="card_header">
                     <div class="name">
-                        <div class="name_value"><strong>${element.name}</strong></div>
+                        <div class="name_value">${element.name}</div>
                     </div>
                     <div class="date">${getDate(element.endTime)}</div>
                 </div>
@@ -40,7 +40,7 @@ const weatherBlock = (weather_periods) => {
                     <div class="detailed_weather">
                         <div class="weather_state">
                             <p>${(element.detailedForecast).substring(0,50)}<span id="dots${element.number}">...</span><span id="more${element.number}">${(element.detailedForecast).substring(50,)}</span></p>
-                            <a onclick="myFunc(${element.number})" id="myBtn${element.number}">more</a>
+                            <a class="upDownBtn" onclick="readBtn(${element.number})" id="myBtn${element.number}"><i class="material-icons">expand_more</i></a>                           
                         </div>
                     </div>
                 </div>
@@ -48,29 +48,56 @@ const weatherBlock = (weather_periods) => {
         
         `;
         document.querySelector('.flex_outer').insertAdjacentHTML('beforeend',markup);
+
+        
     });
 }
 
 
-
-function myFunc(i) {
+function readBtn(i){ 
+    
     var dots = document.getElementById(`dots${i}`);
     var moreText = document.getElementById(`more${i}`);
     var btnText = document.getElementById(`myBtn${i}`);
-    // var container_size = document.getElementById(`container_size${i}`);
+    const container_size = document.getElementById(`container_size${i}`);
+    const myBtn = document.getElementById('myBtn');
 
     if (dots.style.display === "none") {
         dots.style.display = "inline";
-        btnText.innerHTML = "more"; 
+        btnText.innerHTML = "<i class=\"material-icons\">expand_more</i>"; 
         moreText.style.display = "none";
-        // container_size.style.height = '300px';
+        // container_size.style.height = '100%';
     } else {
         dots.style.display = "none";
-        btnText.innerHTML = "less"; 
+        btnText.innerHTML = "<i class=\"material-icons\">expand_less</i>"; 
         moreText.style.display = "inline";
-        // container_size.style.height = '150px';
-    } 
+        // container_size.style.height = '200%';
+    }
+
+        
+
 }
+
+
+
+// function myFunc(i) {
+//     var dots = document.getElementById(`dots${i}`);
+//     var moreText = document.getElementById(`more${i}`);
+//     var btnText = document.getElementById(`myBtn${i}`);
+//     // var container_size = document.getElementById(`container_size${i}`);
+
+//     if (dots.style.display === "none") {
+//         dots.style.display = "inline";
+//         btnText.innerHTML = "more"; 
+//         moreText.style.display = "none";
+//         // container_size.style.height = '300px';
+//     } else {
+//         dots.style.display = "none";
+//         btnText.innerHTML = "less"; 
+//         moreText.style.display = "inline";
+//         // container_size.style.height = '150px';
+//     } 
+// }
 
 
 
