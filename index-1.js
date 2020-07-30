@@ -13,43 +13,43 @@ async function getCoordinates(query){
 
 const cityName = (city,state) => {
     const markup = `
-        <div class="city_name">${city},${state}</div>
+        <div class="city_name">${city}, ${state}</div>
     `;
     document.querySelector('.flex_outer').insertAdjacentHTML('beforeend',markup);
 }
 
 const weatherBlock = (weather_periods) => {
 
-    weather_periods.forEach(element => {
-        const markup = `
-            
-            <div class="container" id="container_size${element.number}">
-                <div class="card_header">
-                    <div class="name">
-                        <div class="name_value">${element.name}</div>
-                    </div>
-                    <div class="date">${getDate(element.endTime)}</div>
-                </div>
-                <div class="card_content">
-                    <div class="forecast_container">   
-                        <div class="weather_icon">
-                            <img src="${element.icon}" alt="Test">
-                        </div>                                           
-                        <div class="temperature">${element.temperature}&#186;</div>
-                    </div>
-                    <div class="detailed_weather">
-                        <div class="weather_state">
-                            <p>${(element.detailedForecast).substring(0,50)}<span id="dots${element.number}">...</span><span id="more${element.number}">${(element.detailedForecast).substring(50,)}</span></p>
-                            <a class="upDownBtn" onclick="readBtn(${element.number})" id="myBtn${element.number}"><i class="material-icons">expand_more</i></a>                           
+    weather_periods.forEach((element,index) => {
+        setTimeout(function(){
+            const markup = `
+                <div id="${element.number}">
+                    <div class="container" id="container_size${element.number}">
+                        <div class="card_header">
+                            <div class="name">
+                                <div class="name_value">${element.name}</div>
+                            </div>
+                            <div class="date">${getDate(element.endTime)}</div>
+                        </div>
+                        <div class="card_content">
+                            <div class="forecast_container">   
+                                <div class="weather_icon">
+                                    <img src="${element.icon}" alt="Test">
+                                </div>                                           
+                                <div class="temperature">${element.temperature}&#186;</div>
+                            </div>
+                            <div class="detailed_weather">
+                                <div class="weather_state">
+                                    <p>${(element.detailedForecast).substring(0,50)}<span id="dots${element.number}">...</span><span id="more${element.number}">${(element.detailedForecast).substring(50,)}</span></p>
+                                    <a class="upDownBtn" onclick="readBtn(${element.number})" id="myBtn${element.number}"><i class="material-icons">expand_more</i></a>                           
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        
-        `;
-        document.querySelector('.flex_outer').insertAdjacentHTML('beforeend',markup);
-
-        
+                </div>            
+            `;
+            document.querySelector('.flex_outer').insertAdjacentHTML('beforeend',markup);
+        }, index * 100);        
     });
 }
 
@@ -78,52 +78,28 @@ function readBtn(i){
 
 }
 
-
-
-// function myFunc(i) {
-//     var dots = document.getElementById(`dots${i}`);
-//     var moreText = document.getElementById(`more${i}`);
-//     var btnText = document.getElementById(`myBtn${i}`);
-//     // var container_size = document.getElementById(`container_size${i}`);
-
-//     if (dots.style.display === "none") {
-//         dots.style.display = "inline";
-//         btnText.innerHTML = "more"; 
-//         moreText.style.display = "none";
-//         // container_size.style.height = '300px';
-//     } else {
-//         dots.style.display = "none";
-//         btnText.innerHTML = "less"; 
-//         moreText.style.display = "inline";
-//         // container_size.style.height = '150px';
-//     } 
-// }
-
-
-
-
 async function locationForecast(search_string){
     let [longitude, latitude] = await getCoordinates(search_string);
     const result = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`);
     const data = await result.json();
-    console.log(data);
+    // console.log(data);
 
     // getting values of city and state
     const [city, state, date] =await [data['properties']['relativeLocation']['properties']['city'], data['properties']['relativeLocation']['properties']['state'], data];
-    console.log(city,state);
+    // console.log(city,state);
     
 
     // getting forecast data
     const forecast_Url = await data['properties']['forecast'];
-    console.log(forecast_Url);
+    // console.log(forecast_Url);
 
     // getting weather data from forecast URL
     const weather_data_json = await fetch(forecast_Url);
     const weather_data = await weather_data_json.json();
-    console.log(weather_data);
+    // console.log(weather_data);
 
     const weather_periods = weather_data['properties']['periods'];
-    console.log(weather_periods);
+    // console.log(weather_periods);
     cityName(city, state);
     weatherBlock(weather_periods);
 }
@@ -135,18 +111,25 @@ const refreshPage = () => {
     document.querySelector('.flex_outer').innerHTML = '';
 };
 
-
-
-async function Wrapper() {
-    let stringForSearch =await document.getElementById('search_field').value;
+async function Wrapper(stringForSearch) {
     let result = await locationForecast(stringForSearch);
-    console.log(result);
+    // console.log(result);
 }
 
-locationForecast('colorado');
+document.getElementById('main_searchBtn').addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('main_page').style.display = 'none';
+    document.getElementById('nav_container').style.display = 'inline';
+    let stringForSearch = document.getElementById('main_search').value;
+    Wrapper(stringForSearch);
+});
+
+
+
 document.getElementById('search_btn').addEventListener('click', e => {
     e.preventDefault();
-    Wrapper();
+    let stringForSearch = document.getElementById('search_field').value;
+    Wrapper(stringForSearch);
     refreshPage();
 });
 

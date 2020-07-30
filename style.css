@@ -6,12 +6,12 @@
 }
 
 html,body{
-    /* background-image: url('vendors/img/back03.jpg'); */
-    background-color: rgb(47, 105, 105);
+    background-image: url('vendors/img/takahiro-taguchi-8F59AdH6WKk-unsplash.jpg');
+    /* background-color: rgb(85, 243, 243); */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    color: rgb(5, 5, 5);
+    color: rgb(48, 48, 48);
     font-family: 'Montserrat', sans-serif;
     font-size: 14px;
     font-weight: 300;
@@ -26,12 +26,22 @@ html,body{
 }
 
 /* Navbar */
+#nav_container{
+    display: none;
+}
 #logo{
     width: 45px;
     height: 45px;
 }
 
 /* body */
+.main_page{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;    
+}
+
 
 .flex_outer{
     display: flex;
@@ -40,6 +50,7 @@ html,body{
 }
 
 .city_name{
+    color: cornsilk;
     display: flex;
     align-self: center;
     justify-content: center;
@@ -50,16 +61,16 @@ html,body{
 .container{
     align-self: center;
     width: 500px;
-    /* height: 150px; */
     max-height: 500px;
     padding: 1%;
-    box-shadow:1px 1px 5px 5px rgba(68, 68, 68, 0.6);
-    /* background: linear-gradient(0deg,#93b5c0,#14dbe2); */
+    margin: 1%;
+    box-shadow:1px 1px 5px 5px rgba(68, 68, 68, 0.45);
     background-color: rgb(240, 240, 240);
     display: inline-block;
-    margin-top: 0.5%;
     display: flex;
     flex-direction: column;
+    animation: fadeInLeft; /* referring directly to the animation's @keyframe declaration */
+    animation-duration: 0.3s; /* don't forget to set a duration! */
 }
 
 /* card header */
@@ -102,8 +113,6 @@ html,body{
     height: 70px;
 }
 
-
-
 .temperature{
     font-size: 350%;
 }
@@ -114,15 +123,10 @@ html,body{
     justify-content: center;
 }
 
-
 #more1, #more2, #more3, #more4, #more5, #more6, #more7, #more8, #more9, #more10, #more11, #more12, #more13 {
     display: none;
     
 }
-
-
-
-
 
 
 
