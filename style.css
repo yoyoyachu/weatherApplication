@@ -113,7 +113,7 @@ html,body{
     height: 70px;
 }
 
-.temperature{
+.temperature_farenheit{
     font-size: 350%;
 }
 
@@ -125,10 +125,13 @@ html,body{
 
 #more1, #more2, #more3, #more4, #more5, #more6, #more7, #more8, #more9, #more10, #more11, #more12, #more13 {
     display: none;
-    
+    cursor: pointer;
 }
 
-
+.temperature_celcius{
+    display: none;
+    font-size: 350%;
+} 
 
 
 

@@ -22,6 +22,13 @@ const weatherBlock = (weather_periods) => {
 
     weather_periods.forEach((element,index) => {
         setTimeout(function(){
+            function unitChanger(){
+                temp = `${element.temperature}`;
+                celcuis = parseInt((temp - 32 ) * 5/9);
+                console.log(celcuis);
+                return celcuis;
+            }
+            
             const markup = `
                 <div id="${element.number}">
                     <div class="container" id="container_size${element.number}">
@@ -35,8 +42,11 @@ const weatherBlock = (weather_periods) => {
                             <div class="forecast_container">   
                                 <div class="weather_icon">
                                     <img src="${element.icon}" alt="Test">
-                                </div>                                           
-                                <div class="temperature">${element.temperature}&#186;</div>
+                                </div> 
+                                <div id="temp" class="temp">
+                                    <div class="temperature_celcius" id="temperature_celcius">${unitChanger()}&#186;</div>
+                                    <div class="temperature_farenheit" id="temperature_farenheit">${element.temperature}&#186;</div>   
+                                </div>                                       
                             </div>
                             <div class="detailed_weather">
                                 <div class="weather_state">
@@ -48,8 +58,11 @@ const weatherBlock = (weather_periods) => {
                     </div>
                 </div>            
             `;
+
             document.querySelector('.flex_outer').insertAdjacentHTML('beforeend',markup);
-        }, index * 100);        
+
+
+        }, index * 100);
     });
 }
 
@@ -119,9 +132,9 @@ async function Wrapper(stringForSearch) {
 document.getElementById('main_searchBtn').addEventListener('click', e => {
     e.preventDefault();
     document.getElementById('main_page').style.display = 'none';
-    document.getElementById('nav_container').style.display = 'inline';
     let stringForSearch = document.getElementById('main_search').value;
     Wrapper(stringForSearch);
+    document.getElementById('nav_container').style.display = 'inline';
 });
 
 
@@ -132,6 +145,60 @@ document.getElementById('search_btn').addEventListener('click', e => {
     Wrapper(stringForSearch);
     refreshPage();
 });
+
+
+
+
+document.querySelector('#option_C').addEventListener('click', e => {
+    var element1 = document.getElementById("label_F");
+    element1.classList.remove("active");
+    var element2 = document.getElementById("label_C");
+    element2.classList.add("active");
+
+    var listelement3 = document.querySelectorAll(".temperature_farenheit");
+    listelement3.forEach(element => {
+        element.style.display = 'none'
+    });
+    console.log(listelement3)
+    var listelement4 = document.querySelectorAll(".temperature_celcius");
+    console.log(listelement4)
+    listelement4.forEach(element => {
+        element.style.display = 'inline-block'
+    });
+});
+
+document.querySelector('#option_F').addEventListener('click', e => {
+    var element1 = document.getElementById("label_C");
+    element1.classList.remove("active");
+    var element2 = document.getElementById("label_F");
+    element2.classList.add("active");
+
+    var listelement3 = document.querySelectorAll(".temperature_celcius");
+    listelement3.forEach(element => {
+        element.style.display = 'none'
+    });
+    console.log(listelement3)
+    var listelement4 = document.querySelectorAll(".temperature_farenheit");
+    console.log(listelement4)
+    listelement4.forEach(element => {
+        element.style.display = 'inline-block'
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
