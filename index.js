@@ -1,6 +1,8 @@
 async function getCoordinates(query){
     try{
-        const result = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=geocodejson`);
+        const result = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=geocodejson`, {
+            headers: { 'User-Agent': '(weather.yachna.net, @YachnaRana)' }
+        });
         const data =await result.json();
         const [longitude, latitude] = data['features'][0]['geometry']['coordinates'];
         console.log([longitude.toFixed(4),latitude.toFixed(4)]);
@@ -22,10 +24,9 @@ const weatherBlock = (weather_periods) => {
 
     weather_periods.forEach((element,index) => {
         setTimeout(function(){
-            function unitChanger(){
+            function unitConverter(){
                 temp = `${element.temperature}`;
                 celcuis = parseInt((temp - 32 ) * 5/9);
-                console.log(celcuis);
                 return celcuis;
             }
             
@@ -44,14 +45,14 @@ const weatherBlock = (weather_periods) => {
                                     <img src="${element.icon}" alt="Test">
                                 </div> 
                                 <div id="temp" class="temp">
-                                    <div class="temperature_celcius" id="temperature_celcius">${unitChanger()}&#186;</div>
+                                    <div class="temperature_celcius" id="temperature_celcius">${unitConverter()}&#186;</div>
                                     <div class="temperature_farenheit" id="temperature_farenheit">${element.temperature}&#186;</div>   
                                 </div>                                       
                             </div>
                             <div class="detailed_weather">
                                 <div class="weather_state">
                                     <p>${(element.detailedForecast).substring(0,50)}<span id="dots${element.number}">...</span><span id="more${element.number}">${(element.detailedForecast).substring(50,)}</span></p>
-                                    <a class="upDownBtn" onclick="readBtn(${element.number})" id="myBtn${element.number}"><i class="material-icons">expand_more</i></a>                           
+                                    <a class="upDownBtn" onclick="readBtn(${element.number})" id="myBtn${element.number}"><i class="material-icons" id="icon_expandmore">expand_more</i></a>                           
                                 </div>
                             </div>
                         </div>
@@ -77,12 +78,12 @@ function readBtn(i){
 
     if (dots.style.display === "none") {
         dots.style.display = "inline";
-        btnText.innerHTML = "<i class=\"material-icons\">expand_more</i>"; 
+        btnText.innerHTML = "<i class=\"material-icons\" id=\"icon_expandmore\">expand_more</i>"; 
         moreText.style.display = "none";
         // container_size.style.height = '100%';
     } else {
         dots.style.display = "none";
-        btnText.innerHTML = "<i class=\"material-icons\">expand_less</i>"; 
+        btnText.innerHTML = "<i class=\"material-icons\" id=\"icon_expandless\">expand_less</i>"; 
         moreText.style.display = "inline";
         // container_size.style.height = '200%';
     }
@@ -93,7 +94,9 @@ function readBtn(i){
 
 async function locationForecast(search_string){
     let [longitude, latitude] = await getCoordinates(search_string);
-    const result = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`);
+    const result = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`, {
+        headers: { 'User-Agent': '(weather.yachna.net, @YachnaRana)' }
+    });
     const data = await result.json();
     // console.log(data);
 
@@ -159,9 +162,7 @@ document.querySelector('#option_C').addEventListener('click', e => {
     listelement3.forEach(element => {
         element.style.display = 'none'
     });
-    console.log(listelement3)
     var listelement4 = document.querySelectorAll(".temperature_celcius");
-    console.log(listelement4)
     listelement4.forEach(element => {
         element.style.display = 'inline-block'
     });
@@ -177,9 +178,7 @@ document.querySelector('#option_F').addEventListener('click', e => {
     listelement3.forEach(element => {
         element.style.display = 'none'
     });
-    console.log(listelement3)
     var listelement4 = document.querySelectorAll(".temperature_farenheit");
-    console.log(listelement4)
     listelement4.forEach(element => {
         element.style.display = 'inline-block'
     });

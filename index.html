@@ -21,16 +21,16 @@
             <div id="nav_container">
                 <nav class="navbar navbar-light bg-light justify-content-between" id="navbar">
                     <a class="navbar-brand"><img src="vendors/img/fakelogo.png" alt="logo_img" id="logo"></a>
-
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label class="btn btn-info active" id="label_F">
-                            <input type="radio" id="option_F" name="options" autocomplete="off">&#186;F
-                        </label>
-                        <label class="btn btn-info" id="label_C">
-                            <input type="radio" id="option_C" name="options" autocomplete="off">&#186;C
-                        </label>
+                    <div class="nav_items">
+                        <div class="btn-group btn-group-toggle" id="unit_converter" data-toggle="buttons">
+                            <label class="btn btn-info active" id="label_F">
+                                <input type="radio" id="option_F" name="options" autocomplete="off">&#186;F
+                            </label>
+                            <label class="btn btn-info" id="label_C">
+                                <input type="radio" id="option_C" name="options" autocomplete="off">&#186;C
+                            </label>
+                        </div>
                     </div>
-                      
                     <form class="form-inline">
                         <input class="form-control mr-sm-2" type="search" id="search_field" placeholder="City, State" aria-label="Search">
                         <button class="btn btn-outline-info my-2 my-sm-0" id="search_btn" type="submit">Weather</button>
