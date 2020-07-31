@@ -1,8 +1,6 @@
 async function getCoordinates(query){
     try{
-        const result = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=geocodejson`, {
-            headers: { 'User-Agent': '(weather.yachna.net, @YachnaRana)' }
-        });
+        const result = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=geocodejson`);
         const data =await result.json();
         const [longitude, latitude] = data['features'][0]['geometry']['coordinates'];
         console.log([longitude.toFixed(4),latitude.toFixed(4)]);
@@ -94,9 +92,7 @@ function readBtn(i){
 
 async function locationForecast(search_string){
     let [longitude, latitude] = await getCoordinates(search_string);
-    const result = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`, {
-        headers: { 'User-Agent': '(weather.yachna.net, @YachnaRana)' }
-    });
+    const result = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`);
     const data = await result.json();
     // console.log(data);
 
@@ -183,21 +179,4 @@ document.querySelector('#option_F').addEventListener('click', e => {
         element.style.display = 'inline-block'
     });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
