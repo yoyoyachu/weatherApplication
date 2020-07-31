@@ -138,7 +138,7 @@ document.getElementById('main_searchBtn').addEventListener('click', e => {
 
 
 
-document.getElementById('search_btn').addEventListener('click', e => {
+document.getElementById('search_field').addEventListener('keypress', e => {
     e.preventDefault();
     let stringForSearch = document.getElementById('search_field').value;
     Wrapper(stringForSearch);
