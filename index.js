@@ -1,182 +1,146 @@
-async function getCoordinates(query){
-    try{
-        const result = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=geocodejson`);
-        const data =await result.json();
-        const [longitude, latitude] = data['features'][0]['geometry']['coordinates'];
-        console.log([longitude.toFixed(4),latitude.toFixed(4)]);
-        return [longitude.toFixed(2),latitude.toFixed(2)];
-        
-    }catch(err){
-        console.log('error finding coordinates')
-    }
+require('dotenv').config();
+
+const nyt_api_key = process.env.NYT_API_KEY
+
+const express = require('express')
+const path = require('path')
+const ejsMate = require('ejs-mate');
+const app = express();
+const axios = require('axios')
+
+
+
+app.set('view engine', 'ejs');
+app.engine('ejs', ejsMate);
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+app.use(express.static(path.join(__dirname, 'public')))
+
+
+
+const getCoordinates = async (query)=>{
+    const res = await axios.get(`https://nominatim.openstreetmap.org/search?q=${query}&format=geocodejson`);
+    console.log(res.data.features[0].geometry.coordinates)
+    const [longitude, latitude] = res.data.features[0].geometry.coordinates;
+    return [longitude, latitude];
 }
+// console.log(getCoordinates('texas'))
 
-const cityName = (city,state) => {
-    const markup = `
-        <div class="city_name">${city}, ${state}</div>
-    `;
-    document.querySelector('.flex_outer').insertAdjacentHTML('beforeend',markup);
+const getForecast = async (query) =>{
+    [longitude, latitude] = await getCoordinates(query);
+    const res = await axios.get(`https://api.weather.gov/points/${latitude},${longitude}`)
+    const [city, state] = await [res.data.properties.relativeLocation.properties.city, res.data.properties.relativeLocation.properties.state];
+
+    //forecast of 10 days (morning, afternoon,night)
+    const forecastUrl = await res.data.properties.forecast;
+    const dataFromForecastUrl = await axios.get(forecastUrl);
+    const weatherData = dataFromForecastUrl.data.properties.periods[0];
+
+    //hourly forecast of 10 days
+    const hourlyForecastUrl = await res.data.properties.forecastHourly;
+    const dataFromHourlyForecastUrl = await axios.get(hourlyForecastUrl);
+    const hourlyWeatherData = dataFromHourlyForecastUrl.data.properties.periods;
+    console.log(weatherData)
+    return [weatherData,hourlyWeatherData, city, state] ;   
 }
+// getForecast('passaic')
 
-const weatherBlock = (weather_periods) => {
-
-    weather_periods.forEach((element,index) => {
-        setTimeout(function(){
-            function unitConverter(){
-                temp = `${element.temperature}`;
-                celcuis = parseInt((temp - 32 ) * 5/9);
-                return celcuis;
-            }
-            
-            const markup = `
-                <div id="${element.number}">
-                    <div class="container" id="container_size${element.number}">
-                        <div class="card_header">
-                            <div class="name">
-                                <div class="name_value">${element.name}</div>
-                            </div>
-                            <div class="date">${getDate(element.endTime)}</div>
-                        </div>
-                        <div class="card_content">
-                            <div class="forecast_container">   
-                                <div class="weather_icon">
-                                    <img src="${element.icon}" alt="Test">
-                                </div> 
-                                <div id="temp" class="temp">
-                                    <div class="temperature_celcius" id="temperature_celcius">${unitConverter()}&#186;</div>
-                                    <div class="temperature_farenheit" id="temperature_farenheit">${element.temperature}&#186;</div>   
-                                </div>                                       
-                            </div>
-                            <div class="detailed_weather">
-                                <div class="weather_state">
-                                    <p>${(element.detailedForecast).substring(0,50)}<span id="dots${element.number}">...</span><span id="more${element.number}">${(element.detailedForecast).substring(50,)}</span></p>
-                                    <a class="upDownBtn" onclick="readBtn(${element.number})" id="myBtn${element.number}"><i class="material-icons" id="icon_expandmore">expand_more</i></a>                           
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>            
-            `;
-
-            document.querySelector('.flex_outer').insertAdjacentHTML('beforeend',markup);
-
-
-        }, index * 100);
-    });
+const newsFeed = async()=>{
+    const urlFornewFeed = await axios.get(`https://api.nytimes.com/svc/topstories/v2/us.json?api-key=${nyt_api_key}`);
+    const res = await urlFornewFeed.data.results;
+    return res;
 }
 
 
-function readBtn(i){ 
-    
-    var dots = document.getElementById(`dots${i}`);
-    var moreText = document.getElementById(`more${i}`);
-    var btnText = document.getElementById(`myBtn${i}`);
-    const container_size = document.getElementById(`container_size${i}`);
-    const myBtn = document.getElementById('myBtn');
 
-    if (dots.style.display === "none") {
-        dots.style.display = "inline";
-        btnText.innerHTML = "<i class=\"material-icons\" id=\"icon_expandmore\">expand_more</i>"; 
-        moreText.style.display = "none";
-        // container_size.style.height = '100%';
-    } else {
-        dots.style.display = "none";
-        btnText.innerHTML = "<i class=\"material-icons\" id=\"icon_expandless\">expand_less</i>"; 
-        moreText.style.display = "inline";
-        // container_size.style.height = '200%';
-    }
-
-        
-
-}
-
-async function locationForecast(search_string){
-    let [longitude, latitude] = await getCoordinates(search_string);
-    const result = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`);
-    const data = await result.json();
-    // console.log(data);
-
-    // getting values of city and state
-    const [city, state, date] =await [data['properties']['relativeLocation']['properties']['city'], data['properties']['relativeLocation']['properties']['state'], data];
-    // console.log(city,state);
-    
-
-    // getting forecast data
-    const forecast_Url = await data['properties']['forecast'];
-    // console.log(forecast_Url);
-
-    // getting weather data from forecast URL
-    const weather_data_json = await fetch(forecast_Url);
-    const weather_data = await weather_data_json.json();
-    // console.log(weather_data);
-
-    const weather_periods = weather_data['properties']['periods'];
-    // console.log(weather_periods);
-    cityName(city, state);
-    weatherBlock(weather_periods);
-}
-
-const getDate = e => e.substring(5,10);
-
-const refreshPage = () => {
-    document.querySelector('#search_field').value = '';
-    document.querySelector('.flex_outer').innerHTML = '';
-};
-
-async function Wrapper(stringForSearch) {
-    let result = await locationForecast(stringForSearch);
-    // console.log(result);
-}
-
-document.getElementById('main_searchBtn').addEventListener('click', e => {
-    e.preventDefault();
-    document.getElementById('main_page').style.display = 'none';
-    let stringForSearch = document.getElementById('main_search').value;
-    Wrapper(stringForSearch);
-    document.getElementById('nav_container').style.display = 'inline';
-});
+app.get('/newsFeed', async(req, res)=>{
+    const news =await newsFeed();
+    res.render('weather/newsFeed',{news})
+})
+// index route
+// app.get('/index', async (req, res)=>{
+//     res.render('new')
+// })
+//show route
+// app.get('/details/:city', async (req, res)=>{
+//     const {city} = req.params;
+//     const p =await getForecast(city);
+//     console.log(p)
+//     res.render('details',{p, city})
+// })
+//post route
+// app.post('/index', async (req, res)=>{
+//     let {query} = req.body;
+//     let p = await getForecast(query);
+//     res.render('details',{p, getDate})
+// })
 
 
+app.listen(3002, ()=>{ 
+    console.log('app is listening on 3002')
+})
 
-document.getElementById('search_field').addEventListener('keypress', e => {
-    e.preventDefault();
-    let stringForSearch = document.getElementById('search_field').value;
-    Wrapper(stringForSearch);
-    refreshPage();
-});
+// const getDate = (d)=>{
+//     return d.slice(5, 10)
+// }
 
 
 
 
-document.querySelector('#option_C').addEventListener('click', e => {
-    var element1 = document.getElementById("label_F");
-    element1.classList.remove("active");
-    var element2 = document.getElementById("label_C");
-    element2.classList.add("active");
 
-    var listelement3 = document.querySelectorAll(".temperature_farenheit");
-    listelement3.forEach(element => {
-        element.style.display = 'none'
-    });
-    var listelement4 = document.querySelectorAll(".temperature_celcius");
-    listelement4.forEach(element => {
-        element.style.display = 'inline-block'
-    });
-});
 
-document.querySelector('#option_F').addEventListener('click', e => {
-    var element1 = document.getElementById("label_C");
-    element1.classList.remove("active");
-    var element2 = document.getElementById("label_F");
-    element2.classList.add("active");
 
-    var listelement3 = document.querySelectorAll(".temperature_celcius");
-    listelement3.forEach(element => {
-        element.style.display = 'none'
-    });
-    var listelement4 = document.querySelectorAll(".temperature_farenheit");
-    listelement4.forEach(element => {
-        element.style.display = 'inline-block'
-    });
-});
+
+
+
+
+
+
+
+
+
+
+
+// console.log(await finalData.isDayTime)  ....for background chnage..value is boolean so we can put condition on that
+
+
+//data from weatherData
+// {
+//     number: 1,
+//     name: 'Tonight',
+//     startTime: '2021-03-25T19:00:00-04:00',
+//     endTime: '2021-03-26T06:00:00-04:00',
+//     isDaytime: false,
+//     temperature: 56,
+//     temperatureUnit: 'F',
+//     temperatureTrend: 'rising',
+//     windSpeed: '8 mph',
+//     windDirection: 'S',
+//     icon: 'https://api.weather.gov/icons/land/night/rain_showers,30/rain_showers,60?size=medium',
+//     shortForecast: 'Rain Showers Likely',
+//     detailedForecast: 'Rain showers likely after 10pm. Mostly cloudy. Low around 56, with temperatures rising to around 60 overnight. South wind around 8 mph. Chance of precipitation is 60%. New rainfall amounts less than a tenth of an inch possible.'
+//   }
+
+
+
+// data from hourlyWeatherData
+// {
+//     number: 1,
+//     name: '',
+//     startTime: '2021-03-25T19:00:00-04:00',
+//     endTime: '2021-03-25T20:00:00-04:00',
+//     isDaytime: false,
+//     temperature: 63,
+//     temperatureUnit: 'F',
+//     temperatureTrend: null,
+//     windSpeed: '7 mph',
+//     windDirection: 'S',
+//     icon: 'https://api.weather.gov/icons/land/night/sct?size=small',
+//     shortForecast: 'Partly Cloudy',
+//     detailedForecast: ''
+// }
+//   
+
+
 
