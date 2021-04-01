@@ -1,5 +1,4 @@
 require('dotenv').config();
-
 const nyt_api_key = process.env.NYT_API_KEY
 
 const express = require('express')
@@ -7,7 +6,21 @@ const path = require('path')
 const ejsMate = require('ejs-mate');
 const app = express();
 const axios = require('axios')
+const mongoose = require('mongoose');
+const moment = require('moment');
 
+const Weather = require('./models/weatherSchema');
+const LocationData = require('./models/locationSchema');
+const { findOne } = require('./models/weatherSchema');
+
+//setting up database
+mongoose.connect('mongodb://localhost:27017/w1', {useNewUrlParser: true,useCreateIndex:true, useUnifiedTopology: true,useFindAndModify: false});
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () =>{
+    console.log('Database connected');
+});
 
 
 app.set('view engine', 'ejs');
@@ -17,130 +30,114 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname, 'public')))
 
+//declaring some variables in locals to use them in different routes 
+app.use((req,res,next)=>{
+    res.locals.moment = moment;
+    next();
+})
+
 
 
 const getCoordinates = async (query)=>{
     const res = await axios.get(`https://nominatim.openstreetmap.org/search?q=${query}&format=geocodejson`);
-    console.log(res.data.features[0].geometry.coordinates)
-    const [longitude, latitude] = res.data.features[0].geometry.coordinates;
-    return [longitude, latitude];
-}
-// console.log(getCoordinates('texas'))
+    const locationName = await res.data.features[0].properties.geocoding.name;
+    const [longitude, latitude] = await res.data.features[0].geometry.coordinates;
 
-const getForecast = async (query) =>{
-    [longitude, latitude] = await getCoordinates(query);
+    const addCoordinatesToDB = new LocationData({longitude, latitude, locationName});
+    await addCoordinatesToDB.save();
+    console.log('added new coordinates in database')
+
+    return {longitude, latitude, locationName};
+}
+// console.log(getCoordinates('glendale'))
+
+const getForecast = async (longitude,latitude) =>{
     const res = await axios.get(`https://api.weather.gov/points/${latitude},${longitude}`)
-    const [city, state] = await [res.data.properties.relativeLocation.properties.city, res.data.properties.relativeLocation.properties.state];
+    const [city,state] =  [res.data.properties.relativeLocation.properties.city, res.data.properties.relativeLocation.properties.state];
+
+
+    const [gridId,gridX,gridY] =  [res.data.properties.gridId,res.data.properties.gridX,res.data.properties.gridY]
 
     //forecast of 10 days (morning, afternoon,night)
-    const forecastUrl = await res.data.properties.forecast;
-    const dataFromForecastUrl = await axios.get(forecastUrl);
-    const weatherData = dataFromForecastUrl.data.properties.periods[0];
+    const currentForecast = await axios.get(await res.data.properties.forecast);
+    const currentInfo = JSON.stringify(await currentForecast.data.properties.periods[0]);
 
     //hourly forecast of 10 days
-    const hourlyForecastUrl = await res.data.properties.forecastHourly;
-    const dataFromHourlyForecastUrl = await axios.get(hourlyForecastUrl);
-    const hourlyWeatherData = dataFromHourlyForecastUrl.data.properties.periods;
-    console.log(weatherData)
-    return [weatherData,hourlyWeatherData, city, state] ;   
+    const hourlyForecast = await axios.get(await res.data.properties.forecastHourly);
+    const hourlyInfo = JSON.stringify(await hourlyForecast.data.properties.periods);
+
+    const startTime = await currentForecast.data.properties.periods[0].startTime
+    
+    const addForcastToDB = new Weather({longitude,latitude,gridId,gridX,gridY,city,state,startTime,hourlyInfo,currentInfo})
+    await addForcastToDB.save();
+    return  {longitude,latitude,gridId,gridX,gridY,city,state,startTime,hourlyInfo,currentInfo};   
 }
-// getForecast('passaic')
+// getForecast(-118.2478,34.1469)
 
-const newsFeed = async()=>{
-    const urlFornewFeed = await axios.get(`https://api.nytimes.com/svc/topstories/v2/us.json?api-key=${nyt_api_key}`);
-    const res = await urlFornewFeed.data.results;
-    return res;
+// const startTime = moment("2021-04-01T13:00:00-06:00").startOf('hour').fromNow();
+// console.log(startTime)
+
+const getForecastFromDB = async (longitude, latitude) => {
+    const forecastFromDB = await Weather.findOne({longitude: longitude, latitude: latitude})
+    console.log(`reading database for ${longitude}, ${latitude}`)
+    return forecastFromDB
 }
 
-
-
-app.get('/newsFeed', async(req, res)=>{
-    const news =await newsFeed();
-    res.render('weather/newsFeed',{news})
-})
-// index route
-// app.get('/index', async (req, res)=>{
-//     res.render('new')
-// })
-//show route
-// app.get('/details/:city', async (req, res)=>{
-//     const {city} = req.params;
-//     const p =await getForecast(city);
-//     console.log(p)
-//     res.render('details',{p, city})
-// })
-//post route
-// app.post('/index', async (req, res)=>{
-//     let {query} = req.body;
-//     let p = await getForecast(query);
-//     res.render('details',{p, getDate})
-// })
-
-
-app.listen(3002, ()=>{ 
-    console.log('app is listening on 3002')
+// INDEX
+app.get('/index', async (req, res)=>{
+    res.render('weather/new')
 })
 
-// const getDate = (d)=>{
-//     return d.slice(5, 10)
-// }
+// POST route
+app.post('/index', async (req, res)=>{
+    try{
+        let {query} = req.body;
+        const queryCapitalized = query.charAt(0).toUpperCase() + query.slice(1)
+        const coordinatesFromDB = await LocationData.findOne({locationName: queryCapitalized})
+
+        if(!coordinatesFromDB){
+            //adding new coordinates to DB
+            console.log('coordinates not found in database');
+            const coordinates = await getCoordinates(queryCapitalized);
+            const forecast = await getForecast(coordinates.longitude,coordinates.latitude);
+            console.log('weather from new coordinates');
+            res.send(forecast);
+        }else{
+            console.log('coordinates found in database')
+            const forecastFromDB = await getForecastFromDB(coordinatesFromDB.longitude,coordinatesFromDB.latitude)
+            console.log(forecastFromDB.startTime)
+            // const forecastFromDB = await getForecast(coordinatesFromDB.longitude,coordinatesFromDB.latitude);
+            res.send(forecastFromDB)  
+        }
+        
+        // res.redirect(`/details/${weather._id}`)
+    }catch(e){
+        console.log(e)
+    }
+})
+
+// show route
+app.get('/details/:id', async (req, res)=>{
+    const {id} = req.params;
+    const weather =await Weather.findById(id);
+    if (!weather) {
+        console.log('not found')
+        return res.redirect('/index');
+    }
+    // console.log(weather)
+    var current =await JSON.parse(weather.currentInfo);
+    var hourly =await JSON.parse(weather.hourlyInfo);
+    res.render('weather/details',{weather,current,hourly})
+})
+
+
+app.listen(3003, ()=>{ 
+    console.log('app is listening on 3003')
+})
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// console.log(await finalData.isDayTime)  ....for background chnage..value is boolean so we can put condition on that
-
-
-//data from weatherData
-// {
-//     number: 1,
-//     name: 'Tonight',
-//     startTime: '2021-03-25T19:00:00-04:00',
-//     endTime: '2021-03-26T06:00:00-04:00',
-//     isDaytime: false,
-//     temperature: 56,
-//     temperatureUnit: 'F',
-//     temperatureTrend: 'rising',
-//     windSpeed: '8 mph',
-//     windDirection: 'S',
-//     icon: 'https://api.weather.gov/icons/land/night/rain_showers,30/rain_showers,60?size=medium',
-//     shortForecast: 'Rain Showers Likely',
-//     detailedForecast: 'Rain showers likely after 10pm. Mostly cloudy. Low around 56, with temperatures rising to around 60 overnight. South wind around 8 mph. Chance of precipitation is 60%. New rainfall amounts less than a tenth of an inch possible.'
-//   }
-
-
-
-// data from hourlyWeatherData
-// {
-//     number: 1,
-//     name: '',
-//     startTime: '2021-03-25T19:00:00-04:00',
-//     endTime: '2021-03-25T20:00:00-04:00',
-//     isDaytime: false,
-//     temperature: 63,
-//     temperatureUnit: 'F',
-//     temperatureTrend: null,
-//     windSpeed: '7 mph',
-//     windDirection: 'S',
-//     icon: 'https://api.weather.gov/icons/land/night/sct?size=small',
-//     shortForecast: 'Partly Cloudy',
-//     detailedForecast: ''
-// }
-//   
 
 
 
