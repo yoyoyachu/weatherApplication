@@ -18,9 +18,9 @@ const seedDB = async()=>{
             "gridId":"OKX",
             "gridX":27,
             "gridY":40,
-            "city":"Navsari",
-            "state":"Gujarat",
-            "startTime": "2021-04-01T11:00:00-07:00",
+            "city":"Passaic",
+            "state":"NJ",
+            "startTime": "2021-04-01T20:00:00-04:00",
             "currentInfo":"",
             "hourlyInfo": ""
         });

@@ -49,7 +49,7 @@ const getCoordinates = async (query)=>{
 
     return {longitude, latitude, locationName};
 }
-// console.log(getCoordinates('glendale'))
+console.log(getCoordinates('glendale'))
 
 const getForecast = async (longitude,latitude) =>{
     const res = await axios.get(`https://api.weather.gov/points/${latitude},${longitude}`)
@@ -67,7 +67,6 @@ const getForecast = async (longitude,latitude) =>{
     const hourlyInfo = JSON.stringify(await hourlyForecast.data.properties.periods);
 
     const startTime = await currentForecast.data.properties.periods[0].startTime
-    
     const addForcastToDB = new Weather({longitude,latitude,gridId,gridX,gridY,city,state,startTime,hourlyInfo,currentInfo})
     await addForcastToDB.save();
     return  {longitude,latitude,gridId,gridX,gridY,city,state,startTime,hourlyInfo,currentInfo};   
@@ -103,11 +102,23 @@ app.post('/index', async (req, res)=>{
             console.log('weather from new coordinates');
             res.send(forecast);
         }else{
+            // reading data from DB
             console.log('coordinates found in database')
             const forecastFromDB = await getForecastFromDB(coordinatesFromDB.longitude,coordinatesFromDB.latitude)
-            console.log(forecastFromDB.startTime)
+
+            const nowTime = new Date()
+            const stTime = new Date(forecastFromDB.startTime)
+
+            console.log(`nowTime = ${nowTime}`)
+            console.log(`stTime = ${stTime}`)
+            console.log(`diffTime = ${Math.abs(nowTime - stTime)}`)
+            // const momentTime = moment(forecastFromDB.startTime.toISOString()).format('LT'); 
+            // const momentTime = moment("2021-04-01T17:00:00-04:00".utc()).format('LT'); 
+
+            // console.log(momentTime)
+            
             // const forecastFromDB = await getForecast(coordinatesFromDB.longitude,coordinatesFromDB.latitude);
-            res.send(forecastFromDB)  
+            res.send(forecastFromDB)
         }
         
         // res.redirect(`/details/${weather._id}`)

@@ -9,9 +9,7 @@ const WeatherSchema = new Schema({
     gridY: Number,
     city:String,
     state:String,
-    startTime:{
-        type: Date,
-    },
+    startTime:String,
     hourlyInfo: String,
     currentInfo: String
 })
