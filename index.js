@@ -11,7 +11,6 @@ const moment = require('moment');
 
 const Weather = require('./models/weatherSchema');
 const LocationData = require('./models/locationSchema');
-const { findOne } = require('./models/weatherSchema');
 
 //setting up database
 mongoose.connect('mongodb://localhost:27017/w1', {useNewUrlParser: true,useCreateIndex:true, useUnifiedTopology: true,useFindAndModify: false});
@@ -42,18 +41,20 @@ const getCoordinates = async (query)=>{
     const res = await axios.get(`https://nominatim.openstreetmap.org/search?q=${query}&format=geocodejson`);
     const locationName = await res.data.features[0].properties.geocoding.name;
     const [longitude, latitude] = await res.data.features[0].geometry.coordinates;
-
+    // console.log([longitude, latitude,locationName])
     const addCoordinatesToDB = new LocationData({longitude, latitude, locationName});
     await addCoordinatesToDB.save();
-    console.log('added new coordinates in database')
+    // console.log(addCoordinatesToDB)
+    // console.log('added new coordinates in database')
 
     return {longitude, latitude, locationName};
 }
-console.log(getCoordinates('glendale'))
+// console.log(getCoordinates('seattle'))
 
 const getForecast = async (longitude,latitude) =>{
     const res = await axios.get(`https://api.weather.gov/points/${latitude},${longitude}`)
     const [city,state] =  [res.data.properties.relativeLocation.properties.city, res.data.properties.relativeLocation.properties.state];
+    // console.log('in getForeCast: city and state name', [city,state])
 
 
     const [gridId,gridX,gridY] =  [res.data.properties.gridId,res.data.properties.gridX,res.data.properties.gridY]
@@ -69,18 +70,19 @@ const getForecast = async (longitude,latitude) =>{
     const startTime = await currentForecast.data.properties.periods[0].startTime
     const addForcastToDB = new Weather({longitude,latitude,gridId,gridX,gridY,city,state,startTime,hourlyInfo,currentInfo})
     await addForcastToDB.save();
+    // console.log('in getForeCast: addForcastToDB')
     return  {longitude,latitude,gridId,gridX,gridY,city,state,startTime,hourlyInfo,currentInfo};   
 }
 // getForecast(-118.2478,34.1469)
 
-// const startTime = moment("2021-04-01T13:00:00-06:00").startOf('hour').fromNow();
-// console.log(startTime)
 
 const getForecastFromDB = async (longitude, latitude) => {
     const forecastFromDB = await Weather.findOne({longitude: longitude, latitude: latitude})
-    console.log(`reading database for ${longitude}, ${latitude}`)
-    return forecastFromDB
+    console.log(`reading database for ${longitude}, ${latitude}`);
+    // console.log(forecastFromDB)
+    return forecastFromDB;
 }
+// console.log(getForecastFromDB(-118.2478,34.1469))
 
 // INDEX
 app.get('/index', async (req, res)=>{
@@ -92,35 +94,40 @@ app.post('/index', async (req, res)=>{
     try{
         let {query} = req.body;
         const queryCapitalized = query.charAt(0).toUpperCase() + query.slice(1)
-        const coordinatesFromDB = await LocationData.findOne({locationName: queryCapitalized})
-
+        const coordinatesFromDB = await LocationData.findOne({locationName: queryCapitalized});
         if(!coordinatesFromDB){
             //adding new coordinates to DB
             console.log('coordinates not found in database');
             const coordinates = await getCoordinates(queryCapitalized);
+            console.log(coordinates);
             const forecast = await getForecast(coordinates.longitude,coordinates.latitude);
             console.log('weather from new coordinates');
             res.send(forecast);
         }else{
             // reading data from DB
-            console.log('coordinates found in database')
-            const forecastFromDB = await getForecastFromDB(coordinatesFromDB.longitude,coordinatesFromDB.latitude)
-
-            const nowTime = new Date()
-            const stTime = new Date(forecastFromDB.startTime)
-
-            console.log(`nowTime = ${nowTime}`)
-            console.log(`stTime = ${stTime}`)
-            console.log(`diffTime = ${Math.abs(nowTime - stTime)}`)
-            // const momentTime = moment(forecastFromDB.startTime.toISOString()).format('LT'); 
-            // const momentTime = moment("2021-04-01T17:00:00-04:00".utc()).format('LT'); 
-
-            // console.log(momentTime)
-            
-            // const forecastFromDB = await getForecast(coordinatesFromDB.longitude,coordinatesFromDB.latitude);
-            res.send(forecastFromDB)
+            const forecastFromDB = await getForecastFromDB(coordinatesFromDB.longitude,coordinatesFromDB.latitude);
+            if(!forecastFromDB){
+                console.log('coordinates found in database but forecast is not available for these coordinates');
+                const newForecast = await getForecast(coordinatesFromDB.longitude,coordinatesFromDB.latitude);
+                res.send(newForecast);
+            }else{
+                console.log('coordinates found in database');
+                const timeDiff = Math.abs(new Date() - new Date(forecastFromDB.startTime)); 
+                console.log(timeDiff);
+                if(timeDiff < 3600000){
+                    console.log('timeDiff is less than an hour');
+                    res.send(forecastFromDB);
+                }else{
+                    console.log('timeDiff is more than an hour');
+                    const abbc = await Weather.findOneAndDelete({longitude: coordinatesFromDB.longitude,latitude: coordinatesFromDB.latitude});
+                    console.log("delete old forecast from db")
+                    // console.log(abbc)
+                    const newForecast = await getForecast(coordinatesFromDB.longitude,coordinatesFromDB.latitude);
+                    res.send(newForecast);
+                }
+                
+            }      
         }
-        
         // res.redirect(`/details/${weather._id}`)
     }catch(e){
         console.log(e)
