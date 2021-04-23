@@ -1,21 +1,28 @@
 <% layout('layouts/boilerplate')%>
-<body>
-
-    <%for(let news_item of news){%>
-        <a href="<%= news_item.short_url%>" style="text-decoration: none; color: rgb(70, 69, 69);">
-            <div style="width: 800px; margin-bottom: 20px; border: 1px solid black;">
-                <h2><%= news_item.title %></h2>
-                <p><%= news_item.abstract %></p>
-                <span><%= news_item.updated_date %></span>
-                <% for(let multimedia of news_item.multimedia){ %>
-                    <% if(multimedia.format == "Normal"){ %>
-                        <img src="<%= multimedia.url %>" alt="image not found">
-                    <% } %>  
-                <% } %> 
+<div class="container" style="background-color: cadetblue;">
+    <div class="row" id="newsfeed-row">           
+        <%for(let news_item of news){%>
+            <div class="col-md-6 newsfeed-flex-container">
+                <a href="<%= news_item.short_url%>" style="text-decoration: none;">
+                    <div class="newsfeed" id="news">
+                        <div class="news-img">
+                            <% for(let multimedia of news_item.multimedia){ %>
+                                <% if(multimedia.format == "Normal"){ %>
+                                    <img src="<%= multimedia.url %>" alt="image not found">
+                                <% } %>  
+                            <% } %>
+                        </div>
+                        <div class="news-headlines">
+                            <%= news_item.abstract %>
+                        </div>
+                    </div>
+                </a>
             </div>
-        </a>
-    <%}%>
-</body>
+        <%}%>            
+    </div>
+</div>
+    
+
 
 
 

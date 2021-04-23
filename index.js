@@ -31,7 +31,6 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 //declaring some variables in locals to use them in different routes 
 app.use((req,res,next)=>{
-    res.locals.moment = moment;
     next();
 })
 
@@ -43,46 +42,44 @@ const getCoordinates = async (query)=>{
     if(!coordinatesFromDB){
         //adding new coordinates to DB
         console.log('coordinates not found in database');
-        // const coordinates = await getCoordinates(queryCapitalized);
-        const res = await axios.get(`https://nominatim.openstreetmap.org/search?q=${query}&format=geocodejson`);
-        const locationName = await res.data.features[0].properties.geocoding.name;
-        const [longitude, latitude] = await res.data.features[0].geometry.coordinates;
+        const coordinates = await axios.get(`https://nominatim.openstreetmap.org/search?q=${query}&format=geocodejson`);
+        const locationName = await coordinates.data.features[0].properties.geocoding.name;
+        const [longitude, latitude] = await coordinates.data.features[0].geometry.coordinates;
         const addCoordinatesToDB = new LocationData({longitude, latitude, locationName});
         await addCoordinatesToDB.save();
-        const coordinatesFromDB = await LocationData.findOne({locationName: queryCapitalized});
-        console.log('added new coordinates in database')
-        return coordinatesFromDB;
+        console.log('added new coordinates in database')       
+        return addCoordinatesToDB;
     }else{
         console.log('coordinates found in database');
-        
         return coordinatesFromDB;
     }  
 }
-// console.log(getCoordinates('seattle'))
+// console.log(getCoordinates('chicago'))
 
 const getForecast = async (query) =>{
     const coordinates = await getCoordinates(query);
-    const [longitude,latitude] = [coordinates.longitude,coordinates.latitude]
-
-    const forecastFromDB = await Weather.findOne({longitude: longitude, latitude: latitude})
+    const [longitude,latitude] = [coordinates.longitude,coordinates.latitude];
+    const forecastFromDB = await Weather.findOne({longitude: longitude, latitude: latitude});
     if(!forecastFromDB){
         const weatherGovResponse = await axios.get(`https://api.weather.gov/points/${latitude},${longitude}`);
         console.log('requesting data from weather.gov api');
+
         //forecast of 10 days (morning, afternoon,night)
         const currentForecast = await axios.get(await weatherGovResponse.data.properties.forecast);
         const currentInfo = JSON.stringify(await currentForecast.data.properties.periods[0]);
+
         //hourly forecast of 10 days
         const hourlyForecast = await axios.get(await weatherGovResponse.data.properties.forecastHourly);
         const hourlyInfo = JSON.stringify(await hourlyForecast.data.properties.periods);
 
-        const [city,state] =  [weatherGovResponse.data.properties.relativeLocation.properties.city, weatherGovResponse.data.properties.relativeLocation.properties.state];
-        const [gridId,gridX,gridY] =  [weatherGovResponse.data.properties.gridId,weatherGovResponse.data.properties.gridX,weatherGovResponse.data.properties.gridY];
+        const [city,state] =await  [weatherGovResponse.data.properties.relativeLocation.properties.city, weatherGovResponse.data.properties.relativeLocation.properties.state];
+        const [gridId,gridX,gridY] =await  [weatherGovResponse.data.properties.gridId,weatherGovResponse.data.properties.gridX,weatherGovResponse.data.properties.gridY];
 
         const startTime = currentForecast.data.properties.periods[0].startTime
         const addForcastToDB =await new Weather({longitude,latitude,gridId,gridX,gridY,city,state,startTime,hourlyInfo,currentInfo})
         await addForcastToDB.save();
-        const forecastFromDB =await Weather.findOne({longitude: longitude, latitude: latitude})
-        return  forecastFromDB;
+        console.log('adding new forecast');
+        return  addForcastToDB;
     }else{
         console.log(`reading database for ${longitude}, ${latitude}`);
         const timeDiff = Math.abs(new Date() - new Date(forecastFromDB.startTime)); 
@@ -91,17 +88,32 @@ const getForecast = async (query) =>{
             return forecastFromDB;
         }else{
             console.log('timeDiff is more than an hour');
-            await Weather.findOneAndDelete({longitude:longitude,latitude:latitude});
-            return getForecast(query);
+            const _delete = await Weather.findOneAndDelete({longitude:longitude,latitude:latitude});
+            const newForecast =await getForecast(query)
+            return newForecast;
         }
     }     
 }
-// getForecast(-118.2478,34.1469)
-// console.log(getForecastFromDB(-118.2478,34.1469))
+
+const newsFeed = async()=>{
+    const urlFornewFeed = await axios.get(`https://api.nytimes.com/svc/topstories/v2/us.json?api-key=${nyt_api_key}`);
+    const news = await urlFornewFeed.data.results;
+    return news;
+}
 
 // INDEX
+app.get('/', async (req, res)=>{
+    res.render('weather/index')
+})
+
+//submit form
 app.get('/index', async (req, res)=>{
     res.render('weather/new')
+})
+
+app.get('/newsFeed', async(req, res)=>{
+        const news =await newsFeed();
+        res.render('weather/newsFeed',{news})
 })
 
 // POST route
@@ -109,13 +121,12 @@ app.post('/index', async (req, res)=>{
     try{
         let {query} = req.body;
         const forecast = await getForecast(query);
-        res.send(forecast)  
-        // res.redirect(`/details/${weather._id}`)
+        res.redirect(`/details/${forecast._id}`)
     }catch(e){
         console.log(e)
+        res.redirect('/index')
     }
 })
-
 // show route
 app.get('/details/:id', async (req, res)=>{
     const {id} = req.params;
