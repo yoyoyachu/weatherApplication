@@ -1,77 +1,24 @@
 <% layout('layouts/boilerplate')%>
-<!-- <div style="border: 2px solid black; width: 600px; height: 600px;">
-    <div class="row d-flex justify-content-around">
-        <div class="col-sm-6" style="background-color: blueviolet; width: 70px; height: 70px;"></div>
-        <div class="col-sm-6" style="background-color: cadetblue; width: 70px; height: 70px;"></div>
-    </div>
-</div> -->
 
-<div class="fluid-container" id="fluid-container"> 
-    
-    <div id="wrap-container">
-        <div id="forecast-nav">
-            <ul class="pt-2" id="forecast-nav-ul">
-                <li ><a class="forecast-nav-listItem" href="">Current</a></li>
-                <li ><a  class="forecast-nav-listItem" href="">Daily</a></li>
-                <li ><a class="forecast-nav-listItem" href="">hourly</a></li>
-            </ul>
-        </div>  
-        <div id="content-container" class="row">
-            <div id="content" class="col-lg-10 col-md-9 px-5">
-                <div id="currentCity-section" class="text-center">Clifton, NJ</div>
-                <div  id="currentForecast-section">
-                    <div id="current-temperature-section">                        
-                        <span id="temperature">28</span>
-                        <span class="tempDegree">&deg;</span>
-                        <span id="fahrenheit">F</span>                       
-                    </div>
-                    <div id="current-detailedForecast-section">
-                        <div id="current-icon-date">
-                            <div id="currentDate">04/09</div>
-                            <div id="currentIcon">
-                                <img src="https://api.weather.gov/icons/land/day/few?" alt="">
-                            </div>
-                        </div>
-                        <div id="detailedForecast">This Afternoon - Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi numquam consequuntur cum doloremque reprehenderit ipsa fugiat, ducimus quos blanditiis corporis!</div>
-                    </div>
-                </div>
+<div class="index-container">
+    <div class="city-name"><%= weather.city%>, <%= weather.state%></div>
+    <div class="forecast-box">
+        <div class="date-name-box">
+            <div class="name-box"><%= current.name%></div>
+            <div class="date-box"><%= current.startTime%></div>
+        </div>
+        <div class="temp-img-box">
+            <div class="temp-box">
+                <span class="temp"><%= current.temperature %></span>
+                <span class="degree">&deg;</span>
             </div>
-            <div id="my-profile" class="col-lg-2 col-md-3">
-                <div id="profile-sidebar">
-                    <div id="profile-content">
-                        <div id="profile-with-padding">
-                            <div id="one">
-                                <div class="img-fluid text-center" id="img"><img id="profile-img" src="https://media-exp1.licdn.com/dms/image/C5103AQHvHhyU-nz-aQ/profile-displayphoto-shrink_800_800/0/1578508782904?e=1623283200&v=beta&t=2L0qKxrT1TuQrj3hEyogeD_aRXS-qdmrqI7wRd6AC-Y" alt="">
-                                    <div>Web Developer</div>
-                                </div>
-                                <div class="text-center" id="mywebsite-link">
-                                    <a href="#" class="icon"><i class="fab fa-github-square"></i></a>
-                                    <a href="#" class="icon px-sm-1 px-lg-3"><i class="fab fa-instagram"></i></a>
-                                    <a href="#" class="icon"><i class="fab fa-linkedin"></i></a>
-                                </div>
-                            </div>
-                            
-                            
-                            <div id="two">
-                                <div id="popular-city-list" class="mt-5">  
-                                    <span>Around the World</span>
-                                    <hr>
-                                    <ul id="city-list">
-                                        <li><a class="city-list-item" href="">New York</a></li>
-                                        <li><a class="city-list-item" href="">Los Angeles</a></li>
-                                        <li><a class="city-list-item" href="">Chicago</a></li>
-                                        <li><a class="city-list-item" href="">Seattle</a></li>
-                                        <li><a class="city-list-item" href="">Washington</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>   
+            <div class="img-box">
+                <!-- <img src="https://api.weather.gov/icons/land/day/rain_showers,20?size=medium" alt=""> -->
+                <img src="<%= current.icon%>" alt="">
+            </div>
+        </div>
+        <div class="detailed-box">
+            <%= current.detailedForecast%>
         </div>
     </div>
 </div>
-

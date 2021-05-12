@@ -102,29 +102,23 @@ const newsFeed = async()=>{
 }
 
 // INDEX
-app.get('/', async (req, res)=>{
-    res.render('weather/index')
-})
+// app.get('/index', async (req, res)=>{
+//     res.render('weather/index')
+// })
 
 //submit form
-app.get('/index', async (req, res)=>{
+app.get('/', async (req, res)=>{
     res.render('weather/new')
 })
-
-app.get('/newsFeed', async(req, res)=>{
-        const news =await newsFeed();
-        res.render('weather/newsFeed',{news})
-})
-
 // POST route
-app.post('/index', async (req, res)=>{
+app.post('/', async (req, res)=>{
     try{
         let {query} = req.body;
         const forecast = await getForecast(query);
         res.redirect(`/details/${forecast._id}`)
     }catch(e){
         console.log(e)
-        res.redirect('/index')
+        res.redirect('/')
     }
 })
 // show route
@@ -133,17 +127,21 @@ app.get('/details/:id', async (req, res)=>{
     const weather =await Weather.findById(id);
     if (!weather) {
         console.log('not found')
-        return res.redirect('/index');
+        return res.redirect('/');
     }
-    // console.log(weather)
     var current =await JSON.parse(weather.currentInfo);
+    console.log(current)
     var hourly =await JSON.parse(weather.hourlyInfo);
-    res.render('weather/details',{weather,current,hourly})
+    res.render('weather/index',{weather,current,hourly});
 })
 
+app.get('/newsFeed', async(req, res)=>{
+    const news =await newsFeed();
+    res.render('weather/newsFeed',{news})
+})
 
-app.listen(3003, ()=>{ 
-    console.log('app is listening on 3003')
+app.listen(3000, ()=>{ 
+    console.log('app is listening on 3000')
 })
 
 

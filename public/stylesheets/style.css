@@ -2,249 +2,117 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-    font-family: 'Montserrat', sans-serif;
-    
-    /* text-align: justify;
-    text-justify: inter-word; */
-    
+    font-family: 'Montserrat', sans-serif; 
+    font-size: 16px;
 }
 
-#fluid-container{
-    background-color: rgb(104, 240, 240);
-}
-#wrap-container{
-    background-color: rgb(179, 219, 216);
-    display: flex;
-    flex-direction: column;
-    padding-top: 40px;
-}
-#forecast-nav{
-    background-color: rgb(121, 158, 156);
-    height: 40px;
-    position: fixed;
-    top: 56px;
-    left: 0;
-    width: 100%;
-    opacity: 0.8;
-}
-#forecast-nav-ul{
-    display: flex;
-    justify-content: space-evenly;
-    width: 30%;
-    list-style: none;
-}
-.forecast-nav-listItem{
-    text-decoration: none;
-    color: black;
-}
-.forecast-nav-listItem:hover{
-    border-bottom: 1px rgb(204, 204, 214) solid;
-    color: white;
-}
+/* ======================================================================= */
+/* =========================index page================================= */
+/* ======================================================================= */
 
-/* bootstrap class m-sm-4 will add margin of 4 when screen size is sm or larger else...for extra small , margin will be 2% */
-#content-container{
-    /* background-color: rgb(192, 164, 192); */
-    margin: 2%;
-}
-
-#my-profile{
-    /* background-color: rgb(223, 105, 105);  */
-    position: relative;
-}
-#profile-sidebar{
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-#profile-content{
-    position: fixed;
-    background-color: rgb(189, 162, 142);
-    height: 520px;
-    width: 16%;
-}
-#profile-with-padding{
-    display: flex;
-    flex-direction: column;
-    padding: 2%;    
-}
-#img{
-    margin-bottom: 5%;
-}
-#profile-img{
-    width: 90px;
-    height: 90px;
-    border: 1px solid black;
-    border-radius: 50%;
-}
-
-.icon{
-    font-size: 170%;
-    text-decoration: none;
-    color: black;
-}
-.icon:hover{
-    color: rgb(255, 187, 187);
-}
-
-#city-list{
-    list-style: none;
-}
-.city-list-item{
-    text-decoration: none;
-    color: black;
-}
-.city-list-item:hover{
-    border-bottom: 1px rgb(204, 204, 214) solid;
-    color: white;
-}
-
-/*inside content */
-#content{
-    background-color: rgb(234, 243, 152);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+.index-container{
+    /* background-color: slateblue; */
     height: 100vh;
-}
-#currentCity-section{
-    background-color: rgb(118, 143, 160);
-    height: 8%;
-    width: auto;
-}
-
-#currentForecast-section{
-    align-self: center;
-    background-color: rgb(231, 158, 158);
-    height: 45%;
-    width: 60%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-/* ======================================================================= */
-/* =====================newsFeed============================= */
-/* ======================================================================= */
-#newsfeed-container{
-    padding: 3%;
-    display: flex;
-    justify-content: center;
-    align-items: center
-}
-.newsfeed-flex-container{
-    
-}
-#newsfeed-row{
-    
-}
-.newsfeed{
-    display: flex;
-    justify-content:space-between;
-    padding: 7%;
-}
-.news-img{
-    
-}
-.news-img img{
-    
-}
-.news-headlines{
-   
-}
-
-
-#currentCity-section{
-    font-weight: bolder;
-    font-size: 250%;
-}
-
-/* current forecast card */
-#current-temperature-section{
-    background-color: rgb(56, 136, 49);
-    height: 50%;
-    width: 50%;
-}
-#temperature{
-    font-size: 700%;
-}
-.tempDegree{
-    font-size: 700%;
-}
-#fahrenheit{
-    font-size: 200%;
-}
-#current-detailedForecast-section{
-    background-color: rgb(95, 96, 99);
-    height: 40%;
-    display: flex;
-    justify-content: space-between;
-}
-#current-icon-date{
-    background-color: rgb(122, 110, 128);
-    width: 40%;
+    margin: 0% 10% 0% 10%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
 }
-#currentDate{
-    background-color: rgb(255, 241, 236);
-    height: 20%;
-    width: 40%;
+.city-name{
+    /* background-color: springgreen; */
+    font-size: 250%;
+    margin:5% 0% 5% 0%;
+}
+.forecast-box{
+    background-color: pink;
+    height: 300px;
+    width: 60%;
     display: flex;
-    align-self: flex-start;
+    flex-direction: column;
+    padding: 0% 2% 2% 2%;
+    box-shadow: 1px 1px 5px #5e5d5d;
 }
-#currentIcon{
-    background-color: rgb(133, 169, 202);
-    height: 70%;
-}
-#detailedForecast{
-    background-color: burlywood;
-    width: 50%;
+.date-name-box{
+    /* background-color: greenyellow; */
+    height: 10%;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bolder;
 }
 
+.temp-img-box{
+    /* background-color: royalblue; */
+    height: 60%;
+    display: flex;
+    justify-content: center;
+}
+.detailed-box{
+    /* background-color: seagreen; */
+    height: 30%;
+}
+.temp-box{
+    /* background-color: rgb(139, 75, 46); */
+    width: 50%;
+    display: flex;
+    /* justify-content: center; */
+}
+.img-box{
+    /* background-color: rgb(255, 116, 116); */
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.img-box img{
+    height: 100px;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.temp{
+    font-size: 700%;
+}
+.degree{
+    font-size: 700%;
+}
+.detailed-box{
+    display: flex;
+    padding: 2%;
+}
 
 
 
 /*big tablet to big screen:width 768px to 1023px  */
 @media only screen and (max-width:1200px) {
-    
+    .forecast-box{
+        height: 50%;
+        width: 90%;
+    }
 }
   
 /*small tablet to big tablet:width 768px to 1023px  */
 @media only screen and (max-width:1023px) {
-    #forecast-nav-ul{
-        width: 30%;
-    }
-    #profile-content{
-        width: 24%;
-    }
+    
 }
   
 /*small phones to small tablet:width 481px to 767px */
-@media only screen and (max-width:767px) {
-    #forecast-nav-ul{
-        width: 40%;
-    }
-    .icon{
-        font-size: 120%;
-    }
+@media only screen and (max-width:768px) {
+    
 }
 
-/* @media only screen and (max-width:573px) {
-    
-} */
 
 /*small tablet to big tablet:width 768px to 1023px  */
 @media only screen and (max-width:480px) {
-    #my-profile{
-        display: none; 
+    .index-container{
+        margin: 0% 0% 0% 0%;
     }
-    #forecast-nav-ul{
-        width: 60%;
+    .city-name{
+        font-size: 250%;
+        margin:10% 0% 10% 0%;
     }
-    #content-container{
-        margin: 5%;
+    .forecast-box{
+        height: 50%;
+        width: 90%;
     }
-    
 }
