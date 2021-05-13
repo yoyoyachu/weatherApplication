@@ -1,6 +1,6 @@
 require('dotenv').config();
 const nyt_api_key = process.env.NYT_API_KEY
-
+const $ = require('jquery');
 const express = require('express')
 const path = require('path')
 const ejsMate = require('ejs-mate');
@@ -130,9 +130,9 @@ app.get('/details/:id', async (req, res)=>{
         return res.redirect('/');
     }
     var current =await JSON.parse(weather.currentInfo);
-    console.log(current)
     var hourly =await JSON.parse(weather.hourlyInfo);
-    res.render('weather/index',{weather,current,hourly});
+    const news =await newsFeed();
+    res.render('weather/index',{weather,current,hourly,news});
 })
 
 app.get('/newsFeed', async(req, res)=>{

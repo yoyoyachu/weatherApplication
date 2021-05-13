@@ -1,24 +1,86 @@
 <% layout('layouts/boilerplate')%>
 
 <div class="index-container">
-    <div class="city-name"><%= weather.city%>, <%= weather.state%></div>
-    <div class="forecast-box">
-        <div class="date-name-box">
-            <div class="name-box"><%= current.name%></div>
-            <div class="date-box"><%= current.startTime%></div>
-        </div>
-        <div class="temp-img-box">
-            <div class="temp-box">
-                <span class="temp"><%= current.temperature %></span>
-                <span class="degree">&deg;</span>
+    <div class="row">
+        <div class="col-md-7">
+            <div class="forecast-news-section">
+                <div class="forecast-section">
+                    <div class="city-name"><%=weather.city%>,<%=weather.state%></div>
+                    <div class="forecast-box">
+                        <div class="date-box"><%=current.startTime%></div>
+                        <div class="temp-img-box">
+                            <div class="img-box">
+                                <div class="name"><i class="fa fa-clock icon-small"></i><%=current.name%></div>
+                                <div class="wind-speed"><i class="fa fa-wind icon-small"></i><%=current.windSpeed%></div>
+                                <div class="forecast-img">
+                                    <!-- <img src="https://api.weather.gov/icons/land/day/rain_showers,20?size=medium" alt=""> -->
+                                    <img src="<%=current.icon%>" alt="">
+                                </div>
+                            </div>
+                            <div class="temp-box">
+                                <span class="temp"><%=current.temperature%></span>
+                                <span class="degree">&deg;</span>
+                            </div>
+                        </div>
+                        <div class="detailed-box">
+                            <%=current.detailedForecast%>
+                        </div>
+                    </div>
+                </div>
+                <a href="https://weather.yachna.net/" class="btn-program button5 rounded" target="_blank">Full Forecast</a>
+                <div class="news-section">
+                    <%let count = 0%> 
+                    <div class="row">
+                        <%for (let news_item of news) {%>
+                            <%if (count === 4) { break; }%>
+                            <div class="col-md-3">
+                                <a href="<%= news_item.short_url%>" class="news-link">
+                                    <div class="newsfeed">
+                                        <div class="news-img">
+                                            <% for(let multimedia of news_item.multimedia){ %>
+                                                <% if(multimedia.format == "Normal"){ %>
+                                                    <img src="<%= multimedia.url %>" alt="image not found" >
+                                                <% } %>  
+                                            <% } %>
+                                        </div>
+                                        <div class="news-headlines">
+                                            <%= news_item.title %>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <%count++%>
+                            
+                         <% } %>
+                    </div>     
+
+                </div>
             </div>
-            <div class="img-box">
-                <!-- <img src="https://api.weather.gov/icons/land/day/rain_showers,20?size=medium" alt=""> -->
-                <img src="<%= current.icon%>" alt="">
+        </div>
+        <div class="col-md-5">
+            <div class="myProfile-section">
+                <div class="profile-img-section">
+                    <img class="profile-img" src="https://media-exp1.licdn.com/dms/image/C5103AQHvHhyU-nz-aQ/profile-displayphoto-shrink_800_800/0/1578508782904?e=1623283200&v=beta&t=2L0qKxrT1TuQrj3hEyogeD_aRXS-qdmrqI7wRd6AC-Y" alt="">
+                </div>
+                <h5 class="profile-title">Web Developer</h5>
+                <div class="mywebsite-link">
+                    <a href="#" class="profile-icon"><i class="fab fa-github-square icon-small"></i></a>
+                    <a href="#" class="profile-icon px-sm-1 px-lg-3"><i class="fab fa-instagram icon-small"></i></a>
+                    <a href="#" class="profile-icon"><i class="fab fa-linkedin icon-small"></i></a>
+                </div>
+                <div class="buy-coffee-btn">
+                    <a href="https://weather.yachna.net/" class="btn-program button5 rounded" target="_blank">Buy Me A Coffee</a>
+                </div>
+                
             </div>
         </div>
-        <div class="detailed-box">
-            <%= current.detailedForecast%>
-        </div>
+
     </div>
+    
 </div>
+
+<script src="/jscript/background-color.js"></script>
+
+
+
+
