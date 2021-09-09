@@ -1,0 +1,326 @@
+* {
+    margin: 0;
+    padding: 0;
+    /* box-sizing: border-box; */
+    font-weight: normal;
+}
+
+html,body{
+    background-image: url('vendors/img/takahiro-taguchi-8F59AdH6WKk-unsplash.jpg');
+    /* background-color: rgb(85, 243, 243); */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: rgb(48, 48, 48);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+}
+
+p{
+    margin-bottom: 0px;
+}
+
+#upDownBtn{
+    justify-items: right;
+}
+.material-icons {
+    font-size: 200%;
+    margin-left: -3%;
+}
+
+/* Navbar */
+#nav_container{
+    display: none;
+}
+#logo{
+    width: 80px;
+    height: 80px;
+    margin-left: 20px;
+}
+.nav_items{
+   display: flex;
+   justify-self: right;
+}
+#unit_converter{
+    display: flex;
+    justify-self: right;
+}
+
+/* body */
+.main_page{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+
+    align-items: center;
+    height: 100vh;    
+}
+.heading{
+    height: 40%;
+    display: flex;
+    align-items: center;
+    justify-self: start;
+    font-size: 350%;
+    font-weight: 800;
+    color: #ecd17d;
+    /* margin: 10% 40% 10% 0 ; */
+
+}
+
+
+.flex_outer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.city_name{
+    color: cornsilk;
+    display: flex;
+    align-self: center;
+    justify-content: center;
+    font-size: 300%;
+    margin: 3% auto 2% auto;
+}
+.card-outerdiv{
+    margin-bottom: 0.5%;
+}
+.card-outerdiv:last-child{
+    margin-bottom: 5%;
+}
+.container{
+    align-self: center;
+    width: 500px;
+    max-height: 500px;
+    padding: 1%;
+    margin: 1%;
+    box-shadow:1px 1px 5px 5px rgba(68, 68, 68, 0.45);
+    background-color: rgb(240, 240, 240);
+    display: inline-block;
+    display: flex;
+    flex-direction: column;
+    animation: fadeInLeft; /* referring directly to the animation's @keyframe declaration */
+    animation-duration: 0.3s; /* don't forget to set a duration! */
+}
+
+/* card header */
+.card_header{
+    display: flex;
+    justify-content: space-between;
+    text-transform: uppercase;
+    font-weight: 300%;
+    height: 15%;
+}
+
+.name{
+    vertical-align: baseline;
+}
+
+.date{
+    color: #666c72;
+    vertical-align: baseline;
+}
+
+/* card content */
+.card_content{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 80%;
+}
+
+/* forecast_container */
+.forecast_container{
+    display: flex;
+    flex-direction: row;
+    width: 45%;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.weather_icon {
+    display: flex;
+    width: 50%;
+    align-items: center;
+    justify-content: center;
+}
+
+.temp {
+    display: flex;
+    width: 50%;   
+    align-items: center;
+    justify-content: center;
+}
+
+.weather_icon img{
+    width: 70px;
+    height: 70px;
+}
+
+.temperature_farenheit{
+    font-size: 350%;
+}
+.temperature_celcius{
+    display: none;
+    font-size: 350%;
+} 
+
+/* detailed_weather */
+.detailed_weather{
+    width: 50%;
+    justify-content: center;
+    padding-left: 2%;
+}
+
+#more1, #more2, #more3, #more4, #more5, #more6, #more7, #more8, #more9, #more10, #more11, #more12, #more13 {
+    display: none;
+    cursor: pointer;
+}
+
+#icon_expandmore,
+#icon_expandless{
+    cursor: pointer;
+}
+
+
+
+
+
+
+@media only screen and (max-width:1200px) {
+    #logo{
+        margin-left: 20px;
+    }
+    .container{
+        width: 450px;
+    }
+}
+  
+  /*small tablet to big tablet:width 768px to 1023px  */
+@media only screen and (max-width:1023px) {
+    #logo{
+        width: 40px;
+        height: 40px;
+        margin-left: 20px;
+    }
+    .city_name{
+        font-size: 270%;
+    }
+    .weather_icon img{
+        width: 60px;
+        height: 60px;
+    }
+
+    /* .temperature_farenheit{
+        font-size: 320%;
+    }
+    .temperature_celcius{
+        font-size: 320%;
+    } */
+    #main_search{
+        width: 220px ;
+        margin-right: 4px;
+    }
+
+}
+  
+  /*small phones to small tablet:width 481px to 767px */
+@media only screen and (max-width:767px) {
+    #logo{
+        width: 70px;
+        height: 70px;
+        margin-left: 8px;
+    }
+    .city_name{
+        font-size: 250%;
+    }
+    .container{
+        width: 400px;
+    }
+    #main_search{
+        width: 220px ;
+        margin-right: 4px;
+    }
+
+
+    /* .weather_icon img{
+        width: 55px;
+        height: 55px;
+    }/*
+
+    /* .temperature_farenheit{
+        font-size: 300%;
+    }
+    .temperature_celcius{
+        font-size: 300%;
+    } */
+ 
+
+
+
+  
+
+
+
+}
+  
+  /* small phones:width 0 to 480px */
+@media only screen and (max-width:480px) {
+    .card-outerdiv{
+        width: 90%;
+        margin-bottom: 1%;
+    }
+    .container{
+        width: 100%;
+    }
+    #logo{
+        width: 60px;
+        height: 60px;
+        margin-left: -5px;
+    }
+    .city_name{
+        font-size: 220%;
+        margin: 15% auto 10% auto;
+    }
+    .form_second{
+        width: 140px;
+    }
+    .card_header{
+        padding: 0% 5%;
+    }
+    .card_content{
+        display: flex;
+        flex-direction: column;
+    }
+    .detailed_weather{
+        width: 90%;
+        font-size: 90%;
+    }
+    .forecast_container {
+        width: 70%;
+    }
+    .material-icons {
+        font-size: 200%;
+        margin-left: 95%;
+    }
+ 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Yachu's Weather App</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="vendors/animate.css">
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        <header>
+            <div id="nav_container">
+                <nav class="navbar navbar-light bg-light justify-content-between" id="navbar">
+                    <a class="navbar-brand" href="https://yachna.net/" target="_blank">
+                        <img src="https://cdn.yachna.net/project-imgs/mylogo.svg" alt="logo_img" id="logo">
+                    </a>
+                    <div class="nav_items">
+                        <div class="btn-group btn-group-toggle" id="unit_converter" data-toggle="buttons">
+                            <label class="btn btn-info active" id="label_F">
+                                <input type="radio" id="option_F" name="options" autocomplete="off">&#186;F
+                            </label>
+                            <label class="btn btn-info" id="label_C">
+                                <input type="radio" id="option_C" name="options" autocomplete="off">&#186;C
+                            </label>
+                        </div>
+                    </div>
+                    <form class="form-inline form_second" id="form_second">
+                        <input class="form-control mr-sm-2" type="search" id="search_field" placeholder="City, State" aria-label="Search">
+                    </form>
+                </nav>
+            </div>
+        </header>
+    
+        
+        <section class="section-weather" id='section-weather'>
+            <div class="main_page" id="main_page">  
+                <h1 class="heading">No BS<br>Weather</br></h1>                 
+                <form class="form-inline my-2 my-lg-0 main_form" id="main_form">
+                    <input class="form-control mr-lg-2 search_field" type="search" id="main_search" placeholder="City, State" aria-label="Search">
+                    <button class="btn btn-info my-2 my-sm-0" id="main_searchBtn" type="submit">Weather</button>
+                </form>                   
+            </div>
+            <div class="flex_outer" id="flex_outer"></div>
+        </section>
+        <script src="index.js"></script>
+    </body>
+</html>

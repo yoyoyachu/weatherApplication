@@ -1,0 +1,31 @@
+/*big tablet to 1200px:width less than 1140px */
+@media only screen and (max-width:1200px) {
+    .container{
+        width: 450px;
+        max-height: 500px;
+        padding: 1%;
+        margin: 1%;
+    }
+}
+  
+  /*small tablet to big tablet:width 768px to 1023px  */
+@media only screen and (max-width:1023px) {
+
+
+}
+  
+  /*small phones to small tablet:width 481px to 767px */
+@media only screen and (max-width:767px) {
+
+
+}
+  
+  /* small phones:width 0 to 480px */
+@media only screen and (max-width:480px) {
+    
+    .container{
+        width: 80%;
+        max-height: 400px;
+    }
+}
+  
